@@ -1,6 +1,7 @@
 """
 化学杀 7t-kill.py
 作者: eureka (SSOJ)
+TODO: 优化UI | 用户主页 | 新卡 | (代码简化与改革 ^ 用C重写 ^ JS页游 | (推介hmtl ^ flask ^ Django ^ JS页游)
 <配置文件(userdata与7t-kill.py平行)>
 userdata\
 │
@@ -23,24 +24,17 @@ userdata\
 ├─new_duel.txt
 ├─points.txt
 └─user_name.txt
-Habit
-    所有文字输出都用input来让玩家回车继续，
-    所有输入都要有提示符“>>> ”。
 Caution
     1.列表索引从0开始
     2.注意路径绑定问题，记住copy.deepcopy()
 Changelog
-    8.14.整装待发。~什么(O_o)??要三个双引号？
-    8.11.修复H2O和人机开窗通风的问题。
-    8.10.修复已知问题，修改概率的失败语句。
+    8.14.整装待发。
+    8.11.修复H2O和人机开窗通风的问题，修改概率的失败语句。
     8.5.把文件结构写在注释里了，非常清晰。另外，给代码加了注释。
     8.4.清除用户数据部分。
-    8.3.在集训时做了一些改动，不知能否保存。
     8.1.迁移至GitHub。
     7.30.将(UR)CO(毒)的概率从0.7增强到0.75，同时，由于正在做主页，暂时关闭对战。
-    7.29.正在做用户主页，好多东西要弄啊！！
-    7.27.全面清除了“【反应】”以外的“【】”。修改教程文本。
-    7.26.优化了UI。加入了“Changelog”内容。
+    7.27.全面优化了UI。修改教程文本。加入了“Changelog”内容。
 """
 
 import random
@@ -64,9 +58,11 @@ class Cards(object): #每张卡片的基本属性和行为
     def __hash__(self):
         return hash(self.name)
 
-    def view(self): #玩家随时要查看卡牌的详细信息
+    def view(self) -> None:
+        """玩家随时要查看卡牌的详细信息"""
         input(f'┌─────────\n│{self.ch_name}\n│{self.en_name}\n│{self.text}\n│{self.rarity}\n└─────────')
-    def activate(self, player, target): #某张卡的发动，入连锁（栈）的过程
+    def activate(self, player, target) -> None:
+        """"某张卡的发动，入连锁（栈）的过程"""
         #（未写）氯气之类的检测
         if stack: #如果连锁某个东西发动，也就是说是C2+，一般指定已有连锁作对象，有时可以指定玩家为对象（？暂时不理解什么时候）
             stack.append([self, target]) #以对象形式入栈
@@ -147,8 +143,9 @@ def log_in():
     #if first_log_in == str(date.today()):
         #input(f'今天是{user_name}的生日呢！+90积分！')
 
-#主页
+
 def pg_main():
+    """主页"""
     while True:
         while True:
             ans = input(f'====主页================\n1.{user_name}\n2.构筑\n3.对战\n4.退出游戏\n>>> ')
@@ -168,8 +165,9 @@ def pg_main():
             points_txt.write(str(points))
             points_txt.close()
             exit()
-#玩家页
+
 def pg_player():
+    """玩家页"""
     first_log_in_txt = open('user_data\\first_log_in.txt', 'r')
     first_log_in = first_log_in_txt.read()
     first_log_in_txt.close()
@@ -254,8 +252,9 @@ def pg_player():
             exit()
         else:
             break
-#构筑页
+
 def pg_building():
+    """"构筑页"""
     new_build_txt = open('user_data\\new_build.txt', 'r')
     new_build = new_build_txt.read()
     new_build_txt.close()
@@ -289,8 +288,8 @@ def pg_building():
             input('请输入正确数字。')
 
 
-#询问当前玩家是否要响应、行动。
 def ask(player):
+    """询问当前玩家是否要响应、行动。"""
     while True: #让玩家指定对象
         if AImode and player == 2: #AI行动
             if stack:
@@ -358,8 +357,9 @@ def ask(player):
             input('    你手上没这张牌。')
     print(f'    玩家{player}不响应。')
     return False
-#target[对象卡(0则没)，对象玩家], C几[牌,[对象卡，对象玩家]]
+
 def tran_target(target):
+    """target[对象卡(0则没)，对象玩家], C几[牌,[对象卡，对象玩家]]"""
     if target:
         try:
             target = [int(target)]
